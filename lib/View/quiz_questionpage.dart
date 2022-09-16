@@ -175,3 +175,4 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
     );
   }
 }
+//  echo "# quizapp" >> README.md && git init && git add README.md && git commit -m "first commit" && git branch -M main && git remote add origin https://github.com/harshgaudani1212/quizapp.git && git push -u origin main
