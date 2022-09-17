@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/quiz_category_controller.dart';
 import '../model/quiz_question_model.dart';
 
@@ -18,6 +17,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
   Rx<int> questionAttemptedCount = 0.obs;
   Rx<int> questionCorrectCount = 0.obs;
+  RxList<int>? attemptedOptionList = List.filled(int.parse(QuizFormController.to.questionCount.value.text.toString()), 99).obs;
 
   List<List<String>>? options;
 
@@ -64,80 +64,90 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                   )),
             ),
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: QuizFormController.to.quizQuestionModel.value.results?.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Flexible(child: Text("(${index + 1}). ${QuizFormController.to.quizQuestionModel.value.results?[index].question}")),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text("Options"),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 250,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: (QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?.length ?? 1),
-                            itemBuilder: (context, indexx) {
-                              RxString tempString = ''.obs;
+              child: QuizFormController.to.quizQuestionModel.value.results?[0].question == null
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: QuizFormController.to.quizQuestionModel.value.results?.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(child: Text("(${index + 1}). ${QuizFormController.to.quizQuestionModel.value.results?[index].question ?? "Loading...."}")),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text("Options"),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                // height: 250,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: (QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?.length ?? 1),
+                                  itemBuilder: (context, indexx) {
+                                    RxString tempString = ''.obs;
 
-                              print(QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?.length);
-                              return Obx(
-                                () => Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: ListTile(
-                                    title: Text(QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? ''),
-                                    tileColor: questionAttemptedList?[index] == true
-                                        ? ((QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? "") == (QuizFormController.to.quizQuestionModel.value.results?[index].correctAnswer))
-                                            ? Colors.green
-                                            : tempString.value == (QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? '')
-                                                ? Colors.white
-                                                : Colors.red
-                                        : Colors.white,
-                                    onTap: () {
-                                      if (questionAttemptedList?[index] == false) {
-                                        tempString.value = QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? '';
+                                    print(QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?.length);
+                                    return QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers == null
+                                        ? const Text("Loading....")
+                                        : Obx(
+                                            () => Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: ListTile(
+                                                title: Text(QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? ''),
+                                                tileColor: questionAttemptedList?[index] == true
+                                                    ? ((QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? "") == (QuizFormController.to.quizQuestionModel.value.results?[index].correctAnswer))
+                                                        ? Colors.green
+                                                        : tempString.value == (QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? '')
+                                                            ? Colors.white
+                                                            : (attemptedOptionList?[index] ?? 0) == indexx
+                                                                ? Colors.red
+                                                                : Colors.white
+                                                    : Colors.white,
+                                                onTap: () {
+                                                  if (questionAttemptedList?[index] == false) {
+                                                    attemptedOptionList?[index] = indexx;
+                                                    tempString.value = QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? '';
 
-                                        questionAttemptedCount.value = questionAttemptedCount.value + 1;
-                                        questionAttemptedList?[index] = true;
-                                        if (((QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? "") == (QuizFormController.to.quizQuestionModel.value.results?[index].correctAnswer)) && (questionAttemptedList?[index] == true)) {
-                                          if (questionCorrectList?[index] == false) {
-                                            questionCorrectCount.value = questionCorrectCount.value + 1;
-                                            questionCorrectList?[index] = true;
-                                          } else {
-                                            questionCorrectCount.value = questionCorrectCount.value - 1;
-                                            questionCorrectList?[index] = false;
-                                          }
-                                        }
-                                      } else {
-                                        //
-                                      }
-                                    },
-                                  ),
+                                                    questionAttemptedCount.value = questionAttemptedCount.value + 1;
+                                                    questionAttemptedList?[index] = true;
+                                                    if (((QuizFormController.to.quizQuestionModel.value.results?[index].incorrectAnswers?[indexx] ?? "") == (QuizFormController.to.quizQuestionModel.value.results?[index].correctAnswer)) && (questionAttemptedList?[index] == true)) {
+                                                      if (questionCorrectList?[index] == false) {
+                                                        questionCorrectCount.value = questionCorrectCount.value + 1;
+                                                        questionCorrectList?[index] = true;
+                                                      } else {
+                                                        questionCorrectCount.value = questionCorrectCount.value - 1;
+                                                        questionCorrectList?[index] = false;
+                                                      }
+                                                    }
+                                                  } else {
+                                                    //
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                  },
                                 ),
-                              );
-                            },
+                              )
+                            ],
                           ),
-                        )
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -157,7 +167,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                           },
                           child: Container(
                             padding: const EdgeInsets.all(14),
-                            child: const Text("okay"),
+                            child: const Text("OKAY"),
                           ),
                         ),
                       ],
@@ -175,4 +185,3 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
     );
   }
 }
-//  echo "# quizapp" >> README.md && git init && git add README.md && git commit -m "first commit" && git branch -M main && git remote add origin https://github.com/harshgaudani1212/quizapp.git && git push -u origin main

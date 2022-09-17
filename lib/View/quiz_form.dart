@@ -58,18 +58,26 @@ class _QuizFormState extends State<QuizForm> {
                         enabled: true,
                         initialValue: QuizFormController.to.quizCategoryModel.value.triviaCategories?.first.id,
                         itemBuilder: (context) {
-                          return QuizFormController.to.quizCategoryModel.value.triviaCategories!.map((e) {
-                            return PopupMenuItem(
-                              value: e.id,
-                              onTap: () {
-                                QuizFormController.to.selectedCategoryName.value = e.name ?? "";
-                                QuizFormController.to.selectedCategoryId.value = e.id ?? 9;
-                                QuizFormController.to.selectedCategoryId.refresh();
-                                print(QuizFormController.to.selectedCategoryId.value);
-                              },
-                              child: Text(e.name ?? ""),
-                            );
-                          }).toList();
+                          return QuizFormController.to.quizCategoryModel.value.triviaCategories?.first.id == null
+                              ? [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    onTap: () {},
+                                    child: const Text("wait ..."),
+                                  )
+                                ]
+                              : QuizFormController.to.quizCategoryModel.value.triviaCategories!.map((e) {
+                                  return PopupMenuItem(
+                                    value: e.id,
+                                    onTap: () {
+                                      QuizFormController.to.selectedCategoryName.value = e.name ?? "";
+                                      QuizFormController.to.selectedCategoryId.value = e.id ?? 9;
+                                      QuizFormController.to.selectedCategoryId.refresh();
+                                      print(QuizFormController.to.selectedCategoryId.value);
+                                    },
+                                    child: Text(e.name ?? ""),
+                                  );
+                                }).toList();
                         }),
                   ],
                 ),
@@ -104,7 +112,7 @@ class _QuizFormState extends State<QuizForm> {
                                       ? 2
                                       : 3,
                               onTap: () {},
-                              child: Text(e),
+                              child: Text(e.toUpperCase()),
                             );
                           }).toList();
                         }),
