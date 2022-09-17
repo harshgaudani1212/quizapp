@@ -20,7 +20,7 @@ class _QuizFormState extends State<QuizForm> {
 
     QuizFormController.to.questionCount.value.text = "10";
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       QuizFormController.to.getQuizCategory();
     });
     QuizFormController.to.quizCategoryModel.refresh();

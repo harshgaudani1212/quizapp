@@ -26,7 +26,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
     super.initState();
     print(widget.url);
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
       QuizFormController.to.quizQuestionModel.value = QuizQuestion();
       QuizFormController.to.getquizQuestionModel(url: widget.url);
       print("initState");
