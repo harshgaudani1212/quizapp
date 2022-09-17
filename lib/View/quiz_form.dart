@@ -20,7 +20,7 @@ class _QuizFormState extends State<QuizForm> {
 
     QuizFormController.to.questionCount.value.text = "10";
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       QuizFormController.to.getQuizCategory();
     });
     QuizFormController.to.quizCategoryModel.refresh();
@@ -48,7 +48,7 @@ class _QuizFormState extends State<QuizForm> {
                     const Text("Select Category"),
                     const Spacer(),
                     PopupMenuButton(
-                        child: Row(children: [Text(QuizFormController.to.selectedCategoryName.value, overflow: TextOverflow.ellipsis, maxLines: 1), const Icon(Icons.more_vert)]),
+                        child: Row(children: [Text(QuizFormController.to.selectedCategoryName.value, overflow: TextOverflow.ellipsis, maxLines: 1), const Icon(Icons.arrow_drop_down)]),
                         onSelected: (value) {
                           QuizFormController.to.selectedCategoryId.value = int.parse(value.toString());
 
@@ -90,7 +90,7 @@ class _QuizFormState extends State<QuizForm> {
                     const Spacer(),
                     PopupMenuButton(
                         child: Row(
-                          children: [Text(QuizFormController.to.selectedDifficultyName.value != null ? QuizFormController.to.selectedDifficultyName.value.toUpperCase() : "ANY"), const Icon(Icons.more_vert)],
+                          children: [Text(QuizFormController.to.selectedDifficultyName.value != null ? QuizFormController.to.selectedDifficultyName.value.toUpperCase() : "ANY"), const Icon(Icons.arrow_drop_down)],
                         ),
                         onSelected: (value) {
                           print(value.toString());
@@ -135,7 +135,7 @@ class _QuizFormState extends State<QuizForm> {
                     const Spacer(),
                     PopupMenuButton(
                         child: Row(
-                          children: [Text((QuizFormController.to.selectedQuizTypeName == "boolean" ? "True/False" : "Multiple")), const Icon(Icons.more_vert)],
+                          children: [Text((QuizFormController.to.selectedQuizTypeName == "boolean" ? "True/False" : "Multiple")), const Icon(Icons.arrow_drop_down)],
                         ),
                         onSelected: (value) {
                           print(value.toString());
